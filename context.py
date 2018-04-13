@@ -1,3 +1,6 @@
+import numpy as np
+import itertools
+
 def context(f):
 	data=[]
 	cont=[]
@@ -14,4 +17,16 @@ def context(f):
 				cont.append(sent2seq(line[:-1]))
 	return data
 
-
+def final(data):
+	f_data=[]	
+	for cont_q_a_sup in data:	
+		cont_vs, cont_ws, q_vs, q_ws, a_vs, a_ws, sup = cont_q_a_sup
+		# finds the total length of the contexts
+		lengths = itertools.accumulate( len(cvec) for cvec in cont_vs )
+		cont_vec = np.concatenate(cont_vs)
+		cont_words = sum(cont_ws,[])
+		# marks the beginning of new sentences
+		st_ends = np.array(list(lengths))
+		f_data.append((cont_vec, st_ends, q_vs, sup, cont_words, cont_q_a_sup, a_vs, a_ws))
+	return np.array(f_data)
+		
